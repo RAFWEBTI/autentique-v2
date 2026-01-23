@@ -1,4 +1,4 @@
-"mutation CreateDocumentMutation($document: DocumentInput!, $signers: [SignerInput!]!, $file: Upload!) {
+"mutation CreateDocumentMutation($sandbox: Boolean!,$document: DocumentInput!, $signers: [SignerInput!]!, $file: Upload!) {
     createDocument(sandbox: $sandbox, document: $document, signers: $signers, file: $file) {
         id
         name
