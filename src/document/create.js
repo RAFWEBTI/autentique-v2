@@ -1,10 +1,10 @@
 "use strict";
-import { Readable } from "stream";
-import fs from "fs";
-import axios from "axios";
-import FormData from "form-data";
-import Api from "../common/Api";
-import utils from "../common/utils";
+const { Readable } = require("stream");
+const fs = require("fs");
+const axios = require("axios");
+const FormData = require("form-data");
+const Api = require("../common/Api");
+const utils = require("../common/utils");
 
 async function createReadStreamFromBuffer(buffer, filename) {
   let done = false;
@@ -85,4 +85,4 @@ const create = async (
   }
 };
 
-export { create };
+module.exports = { create };

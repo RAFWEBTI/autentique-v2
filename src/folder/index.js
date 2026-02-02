@@ -1,10 +1,11 @@
-'use strict'
-import { create } from './create' 
-import { listAll } from './listAll' 
-import { listById } from './listById' 
-import { deleteById } from './deleteById' 
-import { listDocumentsById } from './listDocumentsById' 
-import { moveDocumentById } from './moveDocumentById' 
+"use strict";
+
+const { create } = require("./create");
+const { listAll } = require("./listAll");
+const { listById } = require("./listById");
+const { deleteById } = require("./deleteById");
+const { listDocumentsById } = require("./listDocumentsById");
+const { moveDocumentById } = require("./moveDocumentById");
 
 const folder = (def) => ({
   create: (args) => create(def, args),
@@ -12,7 +13,7 @@ const folder = (def) => ({
   listById: (args) => listById(def, args),
   listDocumentsById: (args) => listDocumentsById(def, args),
   moveDocumentById: (args) => moveDocumentById(def, args),
-  deleteById: (args) => deleteById(def, args)
-})
+  deleteById: (args) => deleteById(def, args),
+});
 
-export default folder
+module.exports = folder;

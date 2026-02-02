@@ -1,5 +1,5 @@
-'use strict'
+"use strict";
 
-export default {
-  query: (queryString) => `{"query":${queryString}}`
-}
+module.exports = {
+  query: (queryString) => `{"query":${queryString}}`,
+};
