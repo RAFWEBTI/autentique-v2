@@ -19,9 +19,13 @@ async function generate(documentType, data) {
 
   const templatePath = path.join(
     __dirname,
-    "../../resources/documents",
-    templateConfig.template,
+    "../../resources/templates/documents",
+    templateConfig.file,
   );
+
+  if (!fs.existsSync(templatePath)) {
+    throw new Error(`Template PDF não encontrado: ${templateConfig.file}`);
+  }
 
   const templateBytes = fs.readFileSync(templatePath);
 
