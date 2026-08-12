@@ -23,7 +23,6 @@ async function sandbox(req, res) {
     const document = await DocumentService.generate(type, data);
 
     res.setHeader("Content-Type", "application/pdf");
-
     res.setHeader(
       "Content-Disposition",
       `inline; filename="${type}-sandbox.pdf"`,
