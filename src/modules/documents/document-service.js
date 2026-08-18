@@ -5,9 +5,13 @@ const path = require("path");
 const { PDFDocument } = require("pdf-lib");
 
 const contratoPrincipal = require("./templates/contrato-principal");
+const adendo = require("./templates/adendo");
+const autorizacaoViagem = require("./templates/autorizacao-viagem");
 
 const templates = {
   contrato_principal: contratoPrincipal,
+  adendo,
+  autorizacao_viagem: autorizacaoViagem,
 };
 
 async function generate(documentType, data) {
@@ -35,13 +39,14 @@ async function generate(documentType, data) {
 
   // .................................................................
   // Tmp validate function to fill the PDF form fields with data
-  const fields = form.getFields();
+  //const fields = form.getFields();
 
-  console.log("Campos encontrados no PDF:");
+  //console.log("Campos encontrados no PDF:");
 
-  fields.forEach((field) => {
-    console.log("-", field.getName());
-  });
+  //fields.forEach((field) => {
+  //  console.log("-", field.getName());
+  //});
+
   // .................................................................
 
   templateConfig.fill(form, data);
@@ -53,6 +58,10 @@ async function generate(documentType, data) {
   return {
     buffer: Buffer.from(pdfBytes),
     templateVersion: templateConfig.version,
+    documentType,
+    documentName: templateConfig.getDocumentName
+      ? templateConfig.getDocumentName(data)
+      : documentType,
   };
 }
 

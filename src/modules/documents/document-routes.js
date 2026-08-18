@@ -7,4 +7,6 @@ const router = express.Router();
 
 router.post("/sandbox", controller.sandbox);
 
+router.post("/create", controller.create);
+
 module.exports = router;
