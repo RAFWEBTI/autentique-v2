@@ -32,7 +32,6 @@ function buildSigners(signers = {}) {
     },
   ];
 
-  // Contratante 2 é opcional
   if (signers.contractor2?.email) {
     if (!signers.contractor2.name) {
       throw new Error("Nome do contratante 2 não informado.");
@@ -44,6 +43,19 @@ function buildSigners(signers = {}) {
       action: "SIGN",
       delivery_method: "DELIVERY_METHOD_LINK",
     });
+  }
+
+  // Valida e-mails duplicados
+  const emails = result.map((signer) => signer.email.trim().toLowerCase());
+
+  const emailDuplicado = emails.find(
+    (email, index) => emails.indexOf(email) !== index,
+  );
+
+  if (emailDuplicado) {
+    throw new Error(
+      `Existem signatários com o mesmo e-mail: ${emailDuplicado}`,
+    );
   }
 
   return result;
