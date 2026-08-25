@@ -37,18 +37,6 @@ async function generate(documentType, data) {
 
   const form = pdfDoc.getForm();
 
-  // .................................................................
-  // Tmp validate function to fill the PDF form fields with data
-  //const fields = form.getFields();
-
-  //console.log("Campos encontrados no PDF:");
-
-  //fields.forEach((field) => {
-  //  console.log("-", field.getName());
-  //});
-
-  // .................................................................
-
   templateConfig.fill(form, data);
 
   form.flatten();
@@ -62,6 +50,8 @@ async function generate(documentType, data) {
     documentName: templateConfig.getDocumentName
       ? templateConfig.getDocumentName(data)
       : documentType,
+
+    signaturePositions: templateConfig.signaturePositions || {},
   };
 }
 

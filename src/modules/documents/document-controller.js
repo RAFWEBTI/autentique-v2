@@ -5,7 +5,7 @@ const FolderService = require("../folders/folder-service");
 const autentique = require("../../index");
 
 // Monta os signatários do documento
-function buildSigners(signers = {}) {
+function buildSigners(signers = {}, signaturePositions = {}) {
   const directorName = process.env.AUTENTIQUE_DIRECTOR_NAME;
   const directorEmail = process.env.AUTENTIQUE_DIRECTOR_EMAIL;
 
@@ -23,12 +23,14 @@ function buildSigners(signers = {}) {
       email: directorEmail,
       action: "SIGN",
       delivery_method: "DELIVERY_METHOD_LINK",
+      positions: signaturePositions.director || [],
     },
     {
       name: signers.contractor1.name,
       email: signers.contractor1.email,
       action: "SIGN",
       delivery_method: "DELIVERY_METHOD_LINK",
+      positions: signaturePositions.contractor1 || [],
     },
   ];
 
@@ -42,6 +44,7 @@ function buildSigners(signers = {}) {
       email: signers.contractor2.email,
       action: "SIGN",
       delivery_method: "DELIVERY_METHOD_LINK",
+      positions: signaturePositions.contractor2 || [],
     });
   }
 
@@ -140,11 +143,14 @@ async function create(req, res) {
       });
     }
 
-    // 1. Monta os signatários.
-    const autentiqueSigners = buildSigners(signers);
-
-    // 2. Gera o PDF.
+    // 1. Gera o PDF e carrega as configurações do template.
     const generated = await DocumentService.generate(type, data);
+
+    // 2. Monta os signatários com as posições do template.
+    const autentiqueSigners = buildSigners(
+      signers,
+      generated.signaturePositions,
+    );
 
     const filename = `${type}-${Date.now()}.pdf`;
 
