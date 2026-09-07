@@ -18,9 +18,9 @@ function validateAutentiqueWebhook(rawBody, signature) {
     .update(rawBody)
     .digest("hex");
 
-  const receivedBuffer = Buffer.from(signature.trim(), "utf8");
+  const receivedBuffer = Buffer.from(signature.trim(), "hex");
 
-  const expectedBuffer = Buffer.from(expectedSignature, "utf8");
+  const expectedBuffer = Buffer.from(expectedSignature, "hex");
 
   if (receivedBuffer.length !== expectedBuffer.length) {
     return false;
