@@ -27,6 +27,13 @@ function validateAutentiqueWebhook(rawBody, signature) {
   console.log("[HMAC] RECEIVED:", receivedSignature);
   console.log("[HMAC] EXPECTED:", expectedSignature);
 
+  console.log("[SECRET] LENGTH:", secret.length);
+
+  console.log(
+    "[SECRET] FINGERPRINT:",
+    crypto.createHash("sha256").update(secret, "utf8").digest("hex"),
+  );
+
   const receivedBuffer = Buffer.from(receivedSignature, "hex");
 
   const expectedBuffer = Buffer.from(expectedSignature, "hex");
