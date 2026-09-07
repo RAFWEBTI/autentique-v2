@@ -4,17 +4,9 @@ const { validateAutentiqueWebhook } = require("./validate-service");
 
 async function validate(req, res) {
   try {
-    const { body, signature } = req.body;
+    const signature = req.headers["x-autentique-signature"];
 
-    if (!body || !signature) {
-      return res.status(400).json({
-        success: false,
-        valid: false,
-        error: "Body ou assinatura não informados.",
-      });
-    }
-
-    const valid = validateAutentiqueWebhook(body, signature);
+    const valid = validateAutentiqueWebhook(req.rawBody, signature);
 
     return res.status(200).json({
       success: true,
