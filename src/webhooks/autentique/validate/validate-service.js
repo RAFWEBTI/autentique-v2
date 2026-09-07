@@ -9,20 +9,29 @@ function validateAutentiqueWebhook(rawBody, signature) {
     throw new Error("AUTENTIQUE_WEBHOOK_SECRET não configurado.");
   }
 
-  if (!rawBody || !signature) {
+  if (!rawBody || !Buffer.isBuffer(rawBody)) {
     return false;
   }
+
+  if (!signature) {
+    return false;
+  }
+
+  const receivedSignature = String(signature).trim().toLowerCase();
 
   const expectedSignature = crypto
     .createHmac("sha256", secret)
     .update(rawBody)
     .digest("hex");
 
-  const receivedBuffer = Buffer.from(signature.trim(), "hex");
+  const receivedBuffer = Buffer.from(receivedSignature, "hex");
 
   const expectedBuffer = Buffer.from(expectedSignature, "hex");
 
-  if (receivedBuffer.length !== expectedBuffer.length) {
+  if (
+    receivedBuffer.length === 0 ||
+    receivedBuffer.length !== expectedBuffer.length
+  ) {
     return false;
   }
 

@@ -11,10 +11,6 @@ const app = express();
 app.use(
   express.json({
     limit: "2mb",
-
-    verify: (req, res, buf) => {
-      req.rawBody = Buffer.from(buf);
-    },
   }),
 );
 
