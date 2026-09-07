@@ -182,6 +182,11 @@ async function create(req, res) {
       throw new Error("Autentique não retornou o documento criado.");
     }
 
+    // Assina automaticamente com o usuário titular do token.
+    await autentique.document.signById({
+      documentId: document.id,
+    });
+
     // 6. Move o documento para a pasta.
     await autentique.folder.moveDocumentById({
       folderId: folder.id,
