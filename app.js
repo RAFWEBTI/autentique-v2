@@ -4,6 +4,7 @@ require("dotenv").config();
 
 const express = require("express");
 const documentRoutes = require("./src/modules/documents/document-routes");
+const autentiqueWebhookValidateRoutes = require("./src/webhooks/autentique/validate/validate-routes");
 
 const app = express();
 
@@ -21,6 +22,8 @@ app.get("/health", (req, res) => {
 });
 
 app.use("/documents", documentRoutes);
+
+app.use("/webhooks/autentique", autentiqueWebhookValidateRoutes);
 
 const PORT = process.env.PORT || 3000;
 
