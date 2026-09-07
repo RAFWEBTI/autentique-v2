@@ -16,15 +16,16 @@ async function validate(req, res) {
 
     const rawBody = Buffer.from(bodyBase64, "base64");
 
-    if (!rawBody.length) {
-      return res.status(400).json({
-        success: false,
-        valid: false,
-        error: "Body inválido.",
-      });
-    }
+    console.log("======================================");
+    console.log("[VALIDATE] BASE64:", bodyBase64);
+    console.log("[VALIDATE] BASE64_LENGTH:", bodyBase64.length);
+    console.log("[VALIDATE] SIGNATURE:", signature);
+    console.log("[VALIDATE] SIGNATURE_LENGTH:", signature.length);
+    console.log("[VALIDATE] RAW_LENGTH:", rawBody.length);
 
     const valid = validateAutentiqueWebhook(rawBody, signature);
+
+    console.log("[VALIDATE] VALID:", valid);
 
     return res.status(200).json({
       success: true,

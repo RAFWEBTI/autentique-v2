@@ -24,6 +24,9 @@ function validateAutentiqueWebhook(rawBody, signature) {
     .update(rawBody)
     .digest("hex");
 
+  console.log("[HMAC] RECEIVED:", receivedSignature);
+  console.log("[HMAC] EXPECTED:", expectedSignature);
+
   const receivedBuffer = Buffer.from(receivedSignature, "hex");
 
   const expectedBuffer = Buffer.from(expectedSignature, "hex");
