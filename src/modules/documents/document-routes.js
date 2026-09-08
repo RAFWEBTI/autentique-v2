@@ -7,6 +7,6 @@ const router = express.Router();
 
 router.post("/sandbox", controller.sandbox);
 router.post("/create", controller.create);
-router.delete("/delete/:documentId", controller.deleteById);
+router.delete("/:documentId", controller.deleteById);
 
 module.exports = router;
