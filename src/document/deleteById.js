@@ -4,15 +4,20 @@ const fs = require("fs");
 const Api = require("../common/Api");
 const utils = require("../common/utils");
 
-const deleteById = async ({ token }, { documentId }) => {
+const deleteById = async ({ token, sandbox = false }, { documentId }) => {
   try {
+    const variables = {
+      sandbox,
+    };
+
     const filename = `${__dirname}/../resources/documents/deleteById.graphql`;
 
     const operations = fs
       .readFileSync(filename)
       .toString()
       .replace(/[\n\r]/gi, "")
-      .replace("$documentId", documentId);
+      .replace("$documentId", documentId)
+      .replace("$variables", JSON.stringify(variables));
 
     const formData = utils.query(operations);
 
