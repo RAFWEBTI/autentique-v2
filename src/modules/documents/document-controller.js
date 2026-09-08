@@ -13,8 +13,20 @@ function buildSigners(signers = {}, signaturePositions = {}) {
     throw new Error("Diretor não configurado no ambiente.");
   }
 
-  if (!signers.contractor1?.name || !signers.contractor1?.email) {
+  if (!signers.contractor1?.name || !signers.contractor1?.cpf) {
     throw new Error("Contratante 1 não informado.");
+  }
+
+  const contractor1Cpf = normalizeCpf(signers.contractor1?.cpf);
+
+  if (!signers.contractor1?.name || contractor1Cpf.length !== 11) {
+    throw new Error("Contratante 1 ou CPF inválido.");
+  }
+
+  const contractor2Cpf = normalizeCpf(signers.contractor2?.cpf);
+
+  if (!signers.contractor2?.name || contractor2Cpf.length !== 11) {
+    throw new Error("Contratante 2 ou CPF inválido.");
   }
 
   const result = [
@@ -25,40 +37,36 @@ function buildSigners(signers = {}, signaturePositions = {}) {
       delivery_method: "DELIVERY_METHOD_LINK",
       positions: signaturePositions.director || [],
     },
+
     {
       name: signers.contractor1.name,
-      email: signers.contractor1.email,
       action: "SIGN",
       delivery_method: "DELIVERY_METHOD_LINK",
+
+      configs: {
+        cpf: contractor1Cpf,
+      },
+
       positions: signaturePositions.contractor1 || [],
     },
   ];
 
-  if (signers.contractor2?.email) {
-    if (!signers.contractor2.name) {
-      throw new Error("Nome do contratante 2 não informado.");
+  if (signers.contractor2?.name) {
+    if (!signers.contractor2.cpf) {
+      throw new Error("CPF do contratante 2 não informado.");
     }
 
     result.push({
       name: signers.contractor2.name,
-      email: signers.contractor2.email,
       action: "SIGN",
       delivery_method: "DELIVERY_METHOD_LINK",
+
+      configs: {
+        cpf: contractor2Cpf,
+      },
+
       positions: signaturePositions.contractor2 || [],
     });
-  }
-
-  // Valida e-mails duplicados
-  const emails = result.map((signer) => signer.email.trim().toLowerCase());
-
-  const emailDuplicado = emails.find(
-    (email, index) => emails.indexOf(email) !== index,
-  );
-
-  if (emailDuplicado) {
-    throw new Error(
-      `Existem signatários com o mesmo e-mail: ${emailDuplicado}`,
-    );
   }
 
   return result;
@@ -76,6 +84,10 @@ function normalizeSigner(signature) {
     email: signature.email,
     link: signature.link?.short_link || null,
   };
+}
+
+function normalizeCpf(cpf) {
+  return String(cpf || "").replace(/\D/g, "");
 }
 
 // SANDBOX .........................................................
@@ -233,7 +245,44 @@ async function create(req, res) {
   }
 }
 
+// DELETE .................................................
+async function deleteById(req, res) {
+  try {
+    const { documentId } = req.params;
+
+    if (!documentId) {
+      return res.status(400).json({
+        success: false,
+        error: "documentId é obrigatório",
+      });
+    }
+
+    const result = await autentique.document.deleteById(
+      {
+        token: process.env.AUTENTIQUE_TOKEN,
+        sandbox: process.env.AUTENTIQUE_SANDBOX === "true",
+      },
+      {
+        documentId,
+      },
+    );
+
+    return res.status(200).json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    console.error("[DOCUMENT DELETE]", error);
+
+    return res.status(500).json({
+      success: false,
+      error: error.message || "Erro ao excluir documento",
+    });
+  }
+}
+
 module.exports = {
   sandbox,
   create,
+  deleteById,
 };
