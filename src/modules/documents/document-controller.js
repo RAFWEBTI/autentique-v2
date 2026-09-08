@@ -257,8 +257,6 @@ async function deleteById(req, res) {
       });
     }
 
-    console.log("DELETE DOCUMENT ID:", documentId);
-
     const result = await autentique.document.deleteById(
       {
         token: process.env.AUTENTIQUE_TOKEN,
