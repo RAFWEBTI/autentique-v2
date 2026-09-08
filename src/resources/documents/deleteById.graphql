@@ -1,4 +1,4 @@
-"mutation DeleteDocumentMutation($sandbox: Boolean!) {
-  deleteDocument(id: \"$documentId\", sandbox: $sandbox)
+"mutation {
+  deleteDocument(id: \"$documentId\")
 }",
-"variables": $variables
+"variables": {}
