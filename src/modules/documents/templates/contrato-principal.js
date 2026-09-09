@@ -91,8 +91,8 @@ const signaturePositions = {
   director: [
     {
       element: "SIGNATURE",
-      x: "70.0372",
-      y: "52.5210",
+      x: "70.0000",
+      y: "52.0000",
       z: 4,
     },
   ],
@@ -100,8 +100,8 @@ const signaturePositions = {
   contractor1: [
     {
       element: "SIGNATURE",
-      x: "69.8992",
-      y: "42.1569",
+      x: "70.0000",
+      y: "42.0000",
       z: 4,
     },
   ],
@@ -109,8 +109,8 @@ const signaturePositions = {
   contractor2: [
     {
       element: "SIGNATURE",
-      x: "69.5214",
-      y: "30.8378",
+      x: "70.0000",
+      y: "30.0000",
       z: 4,
     },
   ],

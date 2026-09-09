@@ -8,25 +8,29 @@ const autentique = require("../../index");
 function buildSigners(signers = {}, signaturePositions = {}) {
   const directorName = process.env.AUTENTIQUE_DIRECTOR_NAME;
   const directorEmail = process.env.AUTENTIQUE_DIRECTOR_EMAIL;
-
   if (!directorName || !directorEmail) {
     throw new Error("Diretor não configurado no ambiente.");
   }
 
-  if (!signers.contractor1?.name || !signers.contractor1?.cpf) {
+  const contractor1Name = signers.contractor1?.name;
+  const contractor1CpfRaw = signers.contractor1?.cpf;
+  if (!contractor1Name || !contractor1CpfRaw) {
     throw new Error("Contratante 1 não informado.");
   }
-
-  const contractor1Cpf = normalizeCpf(signers.contractor1?.cpf);
-
-  if (!signers.contractor1?.name || contractor1Cpf.length !== 11) {
-    throw new Error("Contratante 1 ou CPF inválido.");
+  const contractor1Cpf = normalizeCpf(contractor1CpfRaw);
+  if (contractor1Cpf.length !== 11) {
+    throw new Error("CPF do contratante 1 inválido.");
   }
 
-  const contractor2Cpf = normalizeCpf(signers.contractor2?.cpf);
-
-  if (!signers.contractor2?.name || contractor2Cpf.length !== 11) {
-    throw new Error("Contratante 2 ou CPF inválido.");
+  let contractor2Cpf = "";
+  if (signers.contractor2?.name) {
+    contractor2Cpf = normalizeCpf(signers.contractor2?.cpf);
+    if (!signers.contractor2.cpf) {
+      throw new Error("CPF do contratante 2 não informado.");
+    }
+    if (contractor2Cpf.length !== 11) {
+      throw new Error("CPF do contratante 2 inválido.");
+    }
   }
 
   const result = [
