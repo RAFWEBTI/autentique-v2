@@ -88,20 +88,11 @@ function getDocumentName(data) {
 }
 
 const signaturePositions = {
-  director: [
-    {
-      element: "SIGNATURE",
-      x: "70.0000",
-      y: "52.0000",
-      z: 4,
-    },
-  ],
-
   contractor1: [
     {
       element: "SIGNATURE",
       x: "70.0000",
-      y: "42.0000",
+      y: "30.0000",
       z: 4,
     },
   ],
@@ -110,7 +101,16 @@ const signaturePositions = {
     {
       element: "SIGNATURE",
       x: "70.0000",
-      y: "30.0000",
+      y: "42.0000",
+      z: 4,
+    },
+  ],
+
+  director: [
+    {
+      element: "SIGNATURE",
+      x: "70.0000",
+      y: "52.0000",
       z: 4,
     },
   ],
