@@ -1,4 +1,5 @@
 "use strict";
+
 const fs = require("fs");
 const Api = require("../common/Api");
 const utils = require("../common/utils");
@@ -6,6 +7,7 @@ const utils = require("../common/utils");
 const listById = async ({ token, sandbox = false }, { documentId }) => {
   try {
     const filename = `${__dirname}/../resources/documents/listById.graphql`;
+
     const operations = fs
       .readFileSync(filename)
       .toString()
@@ -14,6 +16,7 @@ const listById = async ({ token, sandbox = false }, { documentId }) => {
       .replace("$sandbox", sandbox.toString());
 
     const formData = utils.query(operations);
+
     const response = await Api(token).post("/graphql", formData, {
       processData: false,
       withCredentials: true,
@@ -23,9 +26,14 @@ const listById = async ({ token, sandbox = false }, { documentId }) => {
       },
     });
 
-    return response && response.data;
+    return response?.data;
   } catch (error) {
-    console.error(error);
+    console.error(
+      "Erro ao consultar documento no Autentique:",
+      error.response?.data || error.message,
+    );
+
+    throw error;
   }
 };
 
