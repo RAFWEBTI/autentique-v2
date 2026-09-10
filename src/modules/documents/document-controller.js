@@ -232,6 +232,11 @@ async function create(req, res) {
         name: folder.name,
       },
 
+      files: {
+        original: document.files?.original || null,
+        signed: document.files?.signed || null,
+      },
+
       signers: normalizedSigners,
 
       createdAt: document.created_at,
