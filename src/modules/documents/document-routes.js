@@ -8,6 +8,5 @@ const router = express.Router();
 router.post("/sandbox", controller.sandbox);
 router.post("/create", controller.create);
 router.delete("/:documentId", controller.deleteById);
-router.get("/:documentId", controller.listById);
 
 module.exports = router;

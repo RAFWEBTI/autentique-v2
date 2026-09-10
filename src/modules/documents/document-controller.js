@@ -285,63 +285,8 @@ async function deleteById(req, res) {
   }
 }
 
-// LIST BY ID .............................................
-async function listById(req, res) {
-  try {
-    const { documentId } = req.params;
-
-    if (!documentId) {
-      return res.status(400).json({
-        success: false,
-        error: "documentId é obrigatório",
-      });
-    }
-
-    const result = await autentique.document.listById(
-      {
-        token: process.env.AUTENTIQUE_TOKEN,
-      },
-      {
-        documentId,
-      },
-    );
-
-    const document = result?.data?.document;
-
-    if (!document) {
-      return res.status(404).json({
-        success: false,
-        error: "Documento não encontrado",
-      });
-    }
-
-    return res.status(200).json({
-      success: true,
-
-      document: {
-        id: document.id,
-        name: document.name,
-
-        files: {
-          original: document.files?.original || null,
-          signed: document.files?.signed || null,
-          pades: document.files?.pades || null,
-        },
-      },
-    });
-  } catch (error) {
-    console.error("[DOCUMENT LIST BY ID]", error);
-
-    return res.status(500).json({
-      success: false,
-      error: error.message || "Erro ao consultar documento",
-    });
-  }
-}
-
 module.exports = {
   sandbox,
   create,
   deleteById,
-  listById,
 };
