@@ -255,11 +255,6 @@ async function deleteById(req, res) {
     const { documentId } = req.params;
     const { folderId } = req.query;
 
-    console.log("[DOCUMENT DELETE REQUEST]", {
-      documentId,
-      folderId,
-    });
-
     if (!documentId) {
       return res.status(400).json({
         success: false,
@@ -274,16 +269,10 @@ async function deleteById(req, res) {
       });
     }
 
-    const result = await autentique.document.deleteById(
-      {
-        token: process.env.AUTENTIQUE_TOKEN,
-        sandbox: process.env.AUTENTIQUE_DEV_MODE === "true",
-      },
-      {
-        documentId,
-        folderId,
-      },
-    );
+    const result = await autentique.document.deleteById({
+      documentId,
+      folderId,
+    });
 
     if (result?.errors?.length) {
       return res.status(400).json({

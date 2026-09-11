@@ -23,8 +23,6 @@ const deleteById = async (
       .replace("$folderId", folderId)
       .replace("$variables", JSON.stringify(variables));
 
-    console.log("[DELETE GRAPHQL]", operations);
-
     const formData = utils.query(operations);
 
     const response = await Api(token).post("/graphql", formData, {
