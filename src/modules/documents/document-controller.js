@@ -255,6 +255,11 @@ async function deleteById(req, res) {
     const { documentId } = req.params;
     const { folderId } = req.query;
 
+    console.log("[DOCUMENT DELETE REQUEST]", {
+      documentId,
+      folderId,
+    });
+
     if (!documentId) {
       return res.status(400).json({
         success: false,
@@ -279,6 +284,14 @@ async function deleteById(req, res) {
         folderId,
       },
     );
+
+    if (result?.errors?.length) {
+      return res.status(400).json({
+        success: false,
+        error: result.errors[0]?.message || "Erro ao excluir documento",
+        errors: result.errors,
+      });
+    }
 
     return res.status(200).json({
       success: true,
