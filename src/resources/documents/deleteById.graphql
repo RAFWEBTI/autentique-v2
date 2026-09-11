@@ -1,4 +1,7 @@
 "mutation {
-  deleteDocument(id: \"$documentId\")
+  deleteDocument(
+    id: \"$documentId\"
+    folder_id: \"$folderId\"
+  )
 }",
 "variables": {}

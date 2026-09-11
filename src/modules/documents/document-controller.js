@@ -253,11 +253,19 @@ async function create(req, res) {
 async function deleteById(req, res) {
   try {
     const { documentId } = req.params;
+    const { folderId } = req.query;
 
     if (!documentId) {
       return res.status(400).json({
         success: false,
         error: "documentId é obrigatório",
+      });
+    }
+
+    if (!folderId) {
+      return res.status(400).json({
+        success: false,
+        error: "folderId é obrigatório",
       });
     }
 
@@ -268,6 +276,7 @@ async function deleteById(req, res) {
       },
       {
         documentId,
+        folderId,
       },
     );
 

@@ -4,7 +4,10 @@ const fs = require("fs");
 const Api = require("../common/Api");
 const utils = require("../common/utils");
 
-const deleteById = async ({ token, sandbox = false }, { documentId }) => {
+const deleteById = async (
+  { token, sandbox = false },
+  { documentId, folderId },
+) => {
   try {
     const variables = {
       sandbox,
@@ -17,6 +20,7 @@ const deleteById = async ({ token, sandbox = false }, { documentId }) => {
       .toString()
       .replace(/[\n\r]/gi, "")
       .replace("$documentId", documentId)
+      .replace("$folderId", folderId)
       .replace("$variables", JSON.stringify(variables));
 
     const formData = utils.query(operations);
