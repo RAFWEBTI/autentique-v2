@@ -13,7 +13,7 @@ function fill(form, data) {
   // Contrato
   form.getTextField("C_ano").setText(data.contrato?.ano || "");
   form.getTextField("C_ano2").setText(data.contrato?.ano || "");
-  form.getTextField("local_data").setText(data.contrato?.local_data || "");
+  form.getTextField("deferido").setText(data.contrato?.deferido || "");
 
   // Financeiro
   form.getTextField("mensalidade").setText(data.financeiro?.mensalidade || "");
@@ -48,22 +48,33 @@ function getDocumentName(data) {
 }
 
 const signers = {
-  signers: {
-    contractor1: {
-      required: true,
-    },
+  contractor1: {
+    required: true,
+  },
 
-    contractor2: {
-      required: false,
-    },
+  contractor2: {
+    required: false,
   },
 };
 
 const signaturePositions = {
-  signaturePositions: {
-    contractor1: [],
-    contractor2: [],
-  },
+  contractor1: [
+    {
+      element: "SIGNATURE",
+      x: "66.62468513853909",
+      y: "80.5704099821747",
+      z: 1,
+    },
+  ],
+
+  contractor2: [
+    {
+      element: "SIGNATURE",
+      x: "66.49874055415621",
+      y: "69.3404634581105",
+      z: 1,
+    },
+  ],
 };
 
 module.exports = {
