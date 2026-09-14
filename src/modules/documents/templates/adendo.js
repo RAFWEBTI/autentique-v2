@@ -61,8 +61,8 @@ const signaturePositions = {
   contractor1: [
     {
       element: "SIGNATURE",
-      x: "66.62468513853909",
-      y: "80.5704099821747",
+      x: "66.52468513853909",
+      y: "69.3404634581105",
       z: 1,
     },
   ],
@@ -70,8 +70,8 @@ const signaturePositions = {
   contractor2: [
     {
       element: "SIGNATURE",
-      x: "66.49874055415621",
-      y: "69.3404634581105",
+      x: "66.52468513853909",
+      y: "80.5704099821747",
       z: 1,
     },
   ],
