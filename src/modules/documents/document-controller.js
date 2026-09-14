@@ -291,14 +291,58 @@ async function create(req, res) {
     // 8. Normaliza os signatários.
     const signatures = document.signatures || [];
 
+    function findSignature(signatures = [], builtSigner) {
+      const signer = builtSigner?.signer;
+
+      if (!signer) {
+        return null;
+      }
+
+      // Se o signatário possui e-mail, prioriza o e-mail.
+      if (signer.email) {
+        const email = signer.email.toLowerCase();
+
+        const foundByEmail = signatures.find((signature) => {
+          const signatureEmail =
+            signature?.email || signature?.user?.email || "";
+
+          return signatureEmail.toLowerCase() === email;
+        });
+
+        if (foundByEmail) {
+          return foundByEmail;
+        }
+      }
+
+      // Contratantes normalmente não possuem e-mail.
+      // Localiza pelo nome enviado ao Autentique.
+      if (signer.name) {
+        const name = signer.name.trim().toLowerCase();
+
+        const foundByName = signatures.find((signature) => {
+          const signatureName = signature?.name || signature?.user?.name || "";
+
+          return signatureName.trim().toLowerCase() === name;
+        });
+
+        if (foundByName) {
+          return foundByName;
+        }
+      }
+
+      return null;
+    }
+
     const normalizedSigners = {
       director: null,
       contractor1: null,
       contractor2: null,
     };
 
-    builtSigners.forEach((item, index) => {
-      normalizedSigners[item.role] = normalizeSigner(signatures[index]);
+    builtSigners.forEach((item) => {
+      const signature = findSignature(signatures, item);
+
+      normalizedSigners[item.role] = normalizeSigner(signature);
     });
 
     // 9. Resposta para ASP.
