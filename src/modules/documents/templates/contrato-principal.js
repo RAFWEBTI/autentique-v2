@@ -88,19 +88,17 @@ function getDocumentName(data) {
 }
 
 const signers = {
-  signers: {
-    director: {
-      required: true,
-      autoSign: true,
-    },
+  director: {
+    required: true,
+    autoSign: true,
+  },
 
-    contractor1: {
-      required: true,
-    },
+  contractor1: {
+    required: true,
+  },
 
-    contractor2: {
-      required: false,
-    },
+  contractor2: {
+    required: false,
   },
 };
 
