@@ -138,6 +138,16 @@ async function create(req, res) {
   try {
     const { type, data, signers } = req.body;
 
+    console.log(
+      "[GENERATED SIGNERS CONFIG]",
+      JSON.stringify(generated.signers, null, 2),
+    );
+
+    console.log(
+      "[SIGNATURE POSITIONS]",
+      JSON.stringify(generated.signaturePositions, null, 2),
+    );
+
     if (!type) {
       return res.status(400).json({
         success: false,
@@ -162,6 +172,16 @@ async function create(req, res) {
     // 1. Gera o PDF e carrega as configurações do template.
     const generated = await DocumentService.generate(type, data);
 
+    console.log(
+      "[GENERATED SIGNERS CONFIG]",
+      JSON.stringify(generated.signers, null, 2),
+    );
+
+    console.log(
+      "[SIGNATURE POSITIONS]",
+      JSON.stringify(generated.signaturePositions, null, 2),
+    );
+
     // 2. Monta os signatários conforme a configuração do template.
     const builtSigners = buildSigners(
       signers,
@@ -169,38 +189,52 @@ async function create(req, res) {
       generated.signers,
     );
 
-    // Remove informações internas antes de enviar ao Autentique.
     const autentiqueSigners = builtSigners.map((item) => item.signer);
+
+    console.log("[BUILT SIGNERS]", JSON.stringify(builtSigners, null, 2));
+
+    console.log(
+      "[AUTENTIQUE SIGNERS]",
+      JSON.stringify(autentiqueSigners, null, 2),
+    );
 
     const filename = `${type}-${Date.now()}.pdf`;
 
-    // 3. Descobre o ano do contrato.
-    const year = data.contrato?.ano || data.ano;
+    // ...
+    // ano / folder etc.
+    // ...
 
-    if (!year) {
-      throw new Error("Ano do contrato não informado.");
-    }
-
-    // 4. Garante a pasta contratos_ANO.
-    const folderName = `contratos_${year}`;
-
-    const folder = await FolderService.ensureFolder(folderName);
-
-    // 5. Cria o documento no Autentique.
     const result = await autentique.document.create({
       document: {
         name: generated.documentName,
       },
-
       signers: autentiqueSigners,
-
       filename,
       file: generated.buffer,
     });
 
+    console.log("[AUTENTIQUE CREATE RESULT]", JSON.stringify(result, null, 2));
+
+    if (result?.errors?.length) {
+      console.error(
+        "[AUTENTIQUE CREATE ERRORS]",
+        JSON.stringify(result.errors, null, 2),
+      );
+
+      throw new Error(
+        result.errors[0]?.message ||
+          "Erro retornado pela Autentique ao criar documento.",
+      );
+    }
+
     const document = result?.data?.createDocument;
 
     if (!document?.id) {
+      console.error(
+        "[AUTENTIQUE CREATE INVALID RESPONSE]",
+        JSON.stringify(result, null, 2),
+      );
+
       throw new Error("Autentique não retornou o documento criado.");
     }
 
