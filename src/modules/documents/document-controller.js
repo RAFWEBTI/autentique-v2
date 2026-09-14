@@ -162,11 +162,15 @@ async function create(req, res) {
     // 1. Gera o PDF e carrega as configurações do template.
     const generated = await DocumentService.generate(type, data);
 
-    // 2. Monta os signatários com as posições do template.
-    const autentiqueSigners = buildSigners(
+    // 2. Monta os signatários conforme a configuração do template.
+    const builtSigners = buildSigners(
       signers,
       generated.signaturePositions,
+      generated.signers,
     );
+
+    // Remove informações internas antes de enviar ao Autentique.
+    const autentiqueSigners = builtSigners.map((item) => item.signer);
 
     const filename = `${type}-${Date.now()}.pdf`;
 
@@ -187,7 +191,9 @@ async function create(req, res) {
       document: {
         name: generated.documentName,
       },
+
       signers: autentiqueSigners,
+
       filename,
       file: generated.buffer,
     });
@@ -198,27 +204,33 @@ async function create(req, res) {
       throw new Error("Autentique não retornou o documento criado.");
     }
 
-    // Assina automaticamente com o usuário titular do token.
-    await autentique.document.signById({
-      documentId: document.id,
-    });
+    // 6. Assinatura automática somente quando definida pelo template.
+    if (generated.signers?.director?.autoSign) {
+      await autentique.document.signById({
+        documentId: document.id,
+      });
+    }
 
-    // 6. Move o documento para a pasta.
+    // 7. Move o documento para a pasta.
     await autentique.folder.moveDocumentById({
       folderId: folder.id,
       documentId: document.id,
     });
 
-    // 7. Normaliza os signatários.
+    // 8. Normaliza os signatários.
     const signatures = document.signatures || [];
 
     const normalizedSigners = {
-      director: normalizeSigner(signatures[0]),
-      contractor1: normalizeSigner(signatures[1]),
-      contractor2: normalizeSigner(signatures[2]),
+      director: null,
+      contractor1: null,
+      contractor2: null,
     };
 
-    // 8. Retorna resposta normalizada para o ASP.
+    builtSigners.forEach((item, index) => {
+      normalizedSigners[item.role] = normalizeSigner(signatures[index]);
+    });
+
+    // 9. Retorna resposta normalizada para o ASP.
     return res.status(201).json({
       success: true,
 

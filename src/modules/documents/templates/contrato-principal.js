@@ -87,6 +87,23 @@ function getDocumentName(data) {
   return `Contrato Escolar ${ano} - ${aluno}`.trim();
 }
 
+const signers = {
+  signers: {
+    director: {
+      required: true,
+      autoSign: true,
+    },
+
+    contractor1: {
+      required: true,
+    },
+
+    contractor2: {
+      required: false,
+    },
+  },
+};
+
 const signaturePositions = {
   contractor1: [
     {
@@ -119,6 +136,7 @@ const signaturePositions = {
 module.exports = {
   file: "contrato_principal_2026_v1.pdf",
   version: "contrato_principal_2026_v1",
+  signers,
   signaturePositions,
   getDocumentName,
   fill,

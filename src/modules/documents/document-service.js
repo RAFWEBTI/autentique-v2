@@ -51,6 +51,7 @@ async function generate(documentType, data) {
       ? templateConfig.getDocumentName(data)
       : documentType,
 
+    signers: templateConfig.signers || {},
     signaturePositions: templateConfig.signaturePositions || {},
   };
 }

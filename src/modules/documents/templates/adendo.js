@@ -47,9 +47,30 @@ function getDocumentName(data) {
   }`;
 }
 
+const signers = {
+  signers: {
+    contractor1: {
+      required: true,
+    },
+
+    contractor2: {
+      required: false,
+    },
+  },
+};
+
+const signaturePositions = {
+  signaturePositions: {
+    contractor1: [],
+    contractor2: [],
+  },
+};
+
 module.exports = {
   file: "adendo_2026_v1.pdf",
   version: "adendo_2026_v1",
+  signers,
+  signaturePositions,
   getDocumentName,
   fill,
 };
