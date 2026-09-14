@@ -5,72 +5,111 @@ const FolderService = require("../folders/folder-service");
 const autentique = require("../../index");
 
 // Monta os signatários do documento
-function buildSigners(signers = {}, signaturePositions = {}) {
-  const directorName = process.env.AUTENTIQUE_DIRECTOR_NAME;
-  const directorEmail = process.env.AUTENTIQUE_DIRECTOR_EMAIL;
-  if (!directorName || !directorEmail) {
-    throw new Error("Diretor não configurado no ambiente.");
-  }
+function buildSigners(
+  signers = {},
+  signaturePositions = {},
+  signerConfig = {},
+) {
+  const result = [];
 
-  const contractor1Name = signers.contractor1?.name;
-  const contractor1CpfRaw = signers.contractor1?.cpf;
-  if (!contractor1Name || !contractor1CpfRaw) {
-    throw new Error("Contratante 1 não informado.");
-  }
-  const contractor1Cpf = normalizeCpf(contractor1CpfRaw);
-  if (contractor1Cpf.length !== 11) {
-    throw new Error("CPF do contratante 1 inválido.");
-  }
+  // DIRECTOR
+  if (signerConfig.director) {
+    const directorName = process.env.AUTENTIQUE_DIRECTOR_NAME;
+    const directorEmail = process.env.AUTENTIQUE_DIRECTOR_EMAIL;
 
-  let contractor2Cpf = "";
-  if (signers.contractor2?.name) {
-    contractor2Cpf = normalizeCpf(signers.contractor2?.cpf);
-    if (!signers.contractor2.cpf) {
-      throw new Error("CPF do contratante 2 não informado.");
-    }
-    if (contractor2Cpf.length !== 11) {
-      throw new Error("CPF do contratante 2 inválido.");
-    }
-  }
-
-  const result = [
-    {
-      name: directorName,
-      email: directorEmail,
-      action: "SIGN",
-      delivery_method: "DELIVERY_METHOD_LINK",
-      positions: signaturePositions.director || [],
-    },
-
-    {
-      name: signers.contractor1.name,
-      action: "SIGN",
-      delivery_method: "DELIVERY_METHOD_LINK",
-
-      configs: {
-        cpf: contractor1Cpf,
-      },
-
-      positions: signaturePositions.contractor1 || [],
-    },
-  ];
-
-  if (signers.contractor2?.name) {
-    if (!signers.contractor2.cpf) {
-      throw new Error("CPF do contratante 2 não informado.");
+    if (signerConfig.director.required && (!directorName || !directorEmail)) {
+      throw new Error("Diretor não configurado no ambiente.");
     }
 
-    result.push({
-      name: signers.contractor2.name,
-      action: "SIGN",
-      delivery_method: "DELIVERY_METHOD_LINK",
+    if (directorName && directorEmail) {
+      result.push({
+        role: "director",
 
-      configs: {
-        cpf: contractor2Cpf,
-      },
+        signer: {
+          name: directorName,
+          email: directorEmail,
+          action: "SIGN",
+          delivery_method: "DELIVERY_METHOD_LINK",
+          positions: signaturePositions.director || [],
+        },
+      });
+    }
+  }
 
-      positions: signaturePositions.contractor2 || [],
-    });
+  // CONTRACTOR 1
+  if (signerConfig.contractor1) {
+    const name = signers.contractor1?.name;
+    const cpfRaw = signers.contractor1?.cpf;
+
+    if (signerConfig.contractor1.required && (!name || !cpfRaw)) {
+      throw new Error("Contratante 1 não informado.");
+    }
+
+    if (name) {
+      if (!cpfRaw) {
+        throw new Error("CPF do contratante 1 não informado.");
+      }
+
+      const cpf = normalizeCpf(cpfRaw);
+
+      if (cpf.length !== 11) {
+        throw new Error("CPF do contratante 1 inválido.");
+      }
+
+      result.push({
+        role: "contractor1",
+
+        signer: {
+          name,
+          action: "SIGN",
+          delivery_method: "DELIVERY_METHOD_LINK",
+
+          configs: {
+            cpf,
+          },
+
+          positions: signaturePositions.contractor1 || [],
+        },
+      });
+    }
+  }
+
+  // CONTRACTOR 2
+  if (signerConfig.contractor2) {
+    const name = signers.contractor2?.name;
+    const cpfRaw = signers.contractor2?.cpf;
+
+    if (signerConfig.contractor2.required && (!name || !cpfRaw)) {
+      throw new Error("Contratante 2 não informado.");
+    }
+
+    if (name) {
+      if (!cpfRaw) {
+        throw new Error("CPF do contratante 2 não informado.");
+      }
+
+      const cpf = normalizeCpf(cpfRaw);
+
+      if (cpf.length !== 11) {
+        throw new Error("CPF do contratante 2 inválido.");
+      }
+
+      result.push({
+        role: "contractor2",
+
+        signer: {
+          name,
+          action: "SIGN",
+          delivery_method: "DELIVERY_METHOD_LINK",
+
+          configs: {
+            cpf,
+          },
+
+          positions: signaturePositions.contractor2 || [],
+        },
+      });
+    }
   }
 
   return result;
@@ -138,16 +177,6 @@ async function create(req, res) {
   try {
     const { type, data, signers } = req.body;
 
-    console.log(
-      "[GENERATED SIGNERS CONFIG]",
-      JSON.stringify(generated.signers, null, 2),
-    );
-
-    console.log(
-      "[SIGNATURE POSITIONS]",
-      JSON.stringify(generated.signaturePositions, null, 2),
-    );
-
     if (!type) {
       return res.status(400).json({
         success: false,
@@ -169,7 +198,7 @@ async function create(req, res) {
       });
     }
 
-    // 1. Gera o PDF e carrega as configurações do template.
+    // 1. Gera PDF e carrega configurações do template.
     const generated = await DocumentService.generate(type, data);
 
     console.log(
@@ -182,7 +211,7 @@ async function create(req, res) {
       JSON.stringify(generated.signaturePositions, null, 2),
     );
 
-    // 2. Monta os signatários conforme a configuração do template.
+    // 2. Monta os signatários conforme o template.
     const builtSigners = buildSigners(
       signers,
       generated.signaturePositions,
@@ -200,10 +229,18 @@ async function create(req, res) {
 
     const filename = `${type}-${Date.now()}.pdf`;
 
-    // ...
-    // ano / folder etc.
-    // ...
+    // 3. Descobre o ano.
+    const year = data.contrato?.ano || data.ano;
 
+    if (!year) {
+      throw new Error("Ano do contrato não informado.");
+    }
+
+    // 4. Pasta.
+    const folderName = `contratos_${year}`;
+    const folder = await FolderService.ensureFolder(folderName);
+
+    // 5. Cria documento.
     const result = await autentique.document.create({
       document: {
         name: generated.documentName,
@@ -238,14 +275,14 @@ async function create(req, res) {
       throw new Error("Autentique não retornou o documento criado.");
     }
 
-    // 6. Assinatura automática somente quando definida pelo template.
+    // 6. Assinatura automática somente se o template definir.
     if (generated.signers?.director?.autoSign) {
       await autentique.document.signById({
         documentId: document.id,
       });
     }
 
-    // 7. Move o documento para a pasta.
+    // 7. Move para pasta.
     await autentique.folder.moveDocumentById({
       folderId: folder.id,
       documentId: document.id,
@@ -264,7 +301,7 @@ async function create(req, res) {
       normalizedSigners[item.role] = normalizeSigner(signatures[index]);
     });
 
-    // 9. Retorna resposta normalizada para o ASP.
+    // 9. Resposta para ASP.
     return res.status(201).json({
       success: true,
 
