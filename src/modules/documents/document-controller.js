@@ -201,15 +201,15 @@ async function create(req, res) {
     // 1. Gera PDF e carrega configurações do template.
     const generated = await DocumentService.generate(type, data);
 
-    console.log(
-      "[GENERATED SIGNERS CONFIG]",
-      JSON.stringify(generated.signers, null, 2),
-    );
+    //console.log(
+    //  "[GENERATED SIGNERS CONFIG]",
+    //  JSON.stringify(generated.signers, null, 2),
+    //);
 
-    console.log(
-      "[SIGNATURE POSITIONS]",
-      JSON.stringify(generated.signaturePositions, null, 2),
-    );
+    //console.log(
+    //  "[SIGNATURE POSITIONS]",
+    //  JSON.stringify(generated.signaturePositions, null, 2),
+    //);
 
     // 2. Monta os signatários conforme o template.
     const builtSigners = buildSigners(
@@ -220,12 +220,12 @@ async function create(req, res) {
 
     const autentiqueSigners = builtSigners.map((item) => item.signer);
 
-    console.log("[BUILT SIGNERS]", JSON.stringify(builtSigners, null, 2));
+    //    console.log("[BUILT SIGNERS]", JSON.stringify(builtSigners, null, 2));
 
-    console.log(
-      "[AUTENTIQUE SIGNERS]",
-      JSON.stringify(autentiqueSigners, null, 2),
-    );
+    //    console.log(
+    //      "[AUTENTIQUE SIGNERS]",
+    //      JSON.stringify(autentiqueSigners, null, 2),
+    //    );
 
     const filename = `${type}-${Date.now()}.pdf`;
 
@@ -250,7 +250,7 @@ async function create(req, res) {
       file: generated.buffer,
     });
 
-    console.log("[AUTENTIQUE CREATE RESULT]", JSON.stringify(result, null, 2));
+    //    console.log("[AUTENTIQUE CREATE RESULT]", JSON.stringify(result, null, 2));
 
     if (result?.errors?.length) {
       console.error(
