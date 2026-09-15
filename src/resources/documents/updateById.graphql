@@ -1,0 +1,12 @@
+"mutation {
+  updateDocument(
+    id: \"$documentId\"
+    document: {
+      deadline_at: \"$deadlineAt\"
+    }
+  ) {
+    id
+    name
+    deadline_at
+  }
+}"

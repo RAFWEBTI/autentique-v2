@@ -375,7 +375,6 @@ async function create(req, res) {
     });
   }
 }
-
 // DELETE .................................................
 async function deleteById(req, res) {
   try {
@@ -396,29 +395,82 @@ async function deleteById(req, res) {
       });
     }
 
-    const result = await autentique.document.deleteById({
+    // ======================================================
+    // 1. BLOQUEIA O DOCUMENTO
+    // ======================================================
+
+    const deadlineAt = new Date().toISOString();
+
+    const updateResult = await autentique.document.updateById({
+      documentId,
+      deadlineAt,
+    });
+
+    if (updateResult?.errors?.length) {
+      return res.status(400).json({
+        success: false,
+        error: updateResult.errors[0]?.message || "Erro ao bloquear documento",
+        errors: updateResult.errors,
+      });
+    }
+
+    const updatedDocument = updateResult?.data?.updateDocument;
+
+    if (!updatedDocument?.id) {
+      return res.status(400).json({
+        success: false,
+        error: "Autentique não confirmou o bloqueio do documento",
+      });
+    }
+
+    // ======================================================
+    // 2. EXCLUI O DOCUMENTO
+    // ======================================================
+
+    const deleteResult = await autentique.document.deleteById({
       documentId,
       folderId,
     });
 
-    if (result?.errors?.length) {
+    if (deleteResult?.errors?.length) {
       return res.status(400).json({
         success: false,
-        error: result.errors[0]?.message || "Erro ao excluir documento",
-        errors: result.errors,
+        error:
+          deleteResult.errors[0]?.message ||
+          "Documento bloqueado, mas houve erro ao excluir",
+        errors: deleteResult.errors,
+        blocked: true,
       });
     }
 
+    const deleted = deleteResult?.data?.deleteDocument === true;
+
+    if (!deleted) {
+      return res.status(400).json({
+        success: false,
+        error: "Documento bloqueado, mas Autentique não confirmou a exclusão",
+        blocked: true,
+      });
+    }
+
+    // ======================================================
+    // 3. SUCESSO
+    // ======================================================
+
     return res.status(200).json({
       success: true,
-      data: result,
+      blocked: true,
+      deleted: true,
+      documentId,
+      deadlineAt: updatedDocument.deadline_at,
+      data: deleteResult,
     });
   } catch (error) {
-    console.error("[DOCUMENT DELETE]", error);
+    console.error("[DOCUMENT DELETE]", error.response?.data || error.message);
 
     return res.status(500).json({
       success: false,
-      error: error.message || "Erro ao excluir documento",
+      error: error.message || "Erro ao bloquear/excluir documento",
     });
   }
 }
