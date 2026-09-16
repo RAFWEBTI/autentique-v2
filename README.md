@@ -486,75 +486,59 @@ Autentique
 
 ---
 
-# Próxima etapa
+# Status do Projeto
 
-Implementar a sincronização do webhook com o banco legado.
+A integração com a Autentique encontra-se concluída e validada para uso em produção.
 
-Tabelas:
+O fluxo completo implementado contempla:
 
-```text
-tb_contratos_assinatura
-tb_contratos_assinatura_signatarios
-```
+geração dos documentos a partir do sistema legado em ASP Clássico;
+envio dos dados para o gateway Node.js;
+preenchimento dos templates PDF;
+criação dos documentos na Autentique;
+organização dos documentos em pastas;
+cadastro dos signatários e respectivos CPFs;
+posicionamento individual das assinaturas;
+assinatura automática do diretor;
+suporte a contratante principal e segundo contratante opcional;
+utilização de links individuais para assinatura, sem dependência dos métodos de envio da Autentique;
+acompanhamento dos eventos através de webhook;
+registro de visualização, assinatura e recusa por signatário;
+atualização automática do status geral do documento;
+captura das URLs dos arquivos original e assinado;
+cancelamento de documentos ainda não finalizados;
+proteção contra cancelamento de documentos já assinados;
+operação em ambientes sandbox e produção;
+integração da geração e cancelamento com a interface ASP através de AJAX;
+suporte aos modelos contrato_principal e adendo.
 
-Mapeamento pretendido:
+A arquitetura definitiva permanece:
 
-```text
-documentId
-→ localizar tb_contratos_assinatura
+ASP Clássico → Gateway Node.js → Autentique
 
-public_id
-→ localizar tb_contratos_assinatura_signatarios
-```
+O ASP Clássico continua responsável pelas regras de negócio, acesso ao banco de dados e interface com o usuário.
 
-Campos de signatário:
+O Gateway Node.js é responsável pela geração dos PDFs e pela comunicação com a API GraphQL da Autentique.
 
-```text
-viewed
-→ visualizado_em
+Os webhooks enviados pela Autentique são processados pelo ASP, mantendo o banco de dados local sincronizado com o andamento das assinaturas.
 
-signed
-→ assinado_em
+# Situação atual
 
-rejected
-→ recusado_em
+O projeto atingiu o escopo definido para sua primeira versão operacional e está pronto para apresentação e utilização em produção.
 
-reason
-→ motivo_recusa
-```
+A partir deste ponto, novas alterações passam a ser consideradas evoluções do projeto, e não pendências da implementação inicial.
 
-Estados principais do documento:
+Entre as evoluções já identificadas estão:
 
-```text
-aguardando_assinatura
-assinado
-cancelado
-recusado
-erro
-```
+suporte a múltiplas organizações/CNPJs na Autentique;
+seleção automática da organização conforme o contrato;
+eventual inclusão de testemunhas como novos signatários;
+novos tipos de documentos e templates;
+substituição do ajuste fixo de timezone (-3h) por tratamento configurável;
+expansão dos webhooks caso novos eventos da Autentique se tornem necessários.
 
-Regras iniciais:
+# Status: ✅ Concluído
 
-```text
-document.updated + rejected_count > 0
-→ recusado
-
-document.finished
-→ assinado
-
-document.deleted
-→ cancelado
-
-demais casos
-→ aguardando_assinatura
-```
-
-Antes da implementação dos UPDATEs, revisar a estrutura real das duas tabelas.
-
-Regra arquitetural permanece:
-
-```text
-ASP Classic = único responsável pelo banco
-Node Gateway = geração PDF + Autentique + validações técnicas
-Node NÃO acessa MySQL/MariaDB
-```
+Ambiente: Sandbox e Produção validados
+Integração: ASP Clássico + Node.js + Autentique API V2
+Última etapa concluída: validação do fluxo completo de geração, assinatura, acompanhamento e cancelamento de documentos digitais.
