@@ -29,7 +29,14 @@ function createReadStreamFromBuffer(buffer, filename) {
 
 const create = async (
   { token, sandbox = false },
-  { document, signers, filename: originalFilename, file, fileUrl },
+  {
+    document,
+    signers,
+    organizationId,
+    filename: originalFilename,
+    file,
+    fileUrl,
+  },
 ) => {
   try {
     const variables = {
@@ -40,6 +47,7 @@ const create = async (
       },
       signers,
       file: null,
+      organizationId: organizationId || null,
     };
 
     const graphqlPath = `${__dirname}/../resources/documents/create.graphql`;

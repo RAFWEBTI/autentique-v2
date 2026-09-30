@@ -1,19 +1,31 @@
-"mutation CreateDocumentMutation($sandbox: Boolean!,$document: DocumentInput!, $signers: [SignerInput!]!, $file: Upload!) {
-    createDocument(sandbox: $sandbox, document: $document, signers: $signers, file: $file) {
-        id
-        name
-        refusable
-        sortable
-        created_at
-        signatures {
-            public_id
-            name
-            email
-            created_at
-            action { name }
-            link { short_link }
-            user { id name email }
-        }
+"mutation CreateDocumentMutation(
+  $sandbox: Boolean!,
+  $document: DocumentInput!,
+  $signers: [SignerInput!]!,
+  $file: Upload!,
+  $organizationId: Int
+) {
+  createDocument(
+    sandbox: $sandbox,
+    document: $document,
+    signers: $signers,
+    file: $file,
+    organization_id: $organizationId
+  ) {
+    id
+    name
+    refusable
+    sortable
+    created_at
+    signatures {
+      public_id
+      name
+      email
+      created_at
+      action { name }
+      link { short_link }
+      user { id name email }
     }
+  }
 }",
 "variables": $variables

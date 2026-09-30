@@ -172,6 +172,31 @@ async function sandbox(req, res) {
   }
 }
 
+// Normaliza o CNPJ, removendo caracteres não numéricos
+function normalizeCnpj(value) {
+  return String(value || "").replace(/\D/g, "");
+}
+
+// Retorna o ID da organização Autentique com base no CNPJ da mantenedora
+function getOrganizationId(data) {
+  const cnpj = normalizeCnpj(data.mantenedora?.cnpj);
+
+  const cnpjOrg1 = normalizeCnpj(process.env.AUTENTIQUE_ORG1_CNPJ);
+  const cnpjOrg2 = normalizeCnpj(process.env.AUTENTIQUE_ORG2_CNPJ);
+
+  if (cnpj && cnpj === cnpjOrg1) {
+    return Number(process.env.AUTENTIQUE_ORG1_ID);
+  }
+
+  if (cnpj && cnpj === cnpjOrg2) {
+    return Number(process.env.AUTENTIQUE_ORG2_ID);
+  }
+
+  throw new Error(
+    `Organização Autentique não configurada para o CNPJ ${cnpj || "não informado"}.`,
+  );
+}
+
 // CREATE .........................................................
 async function create(req, res) {
   try {
@@ -240,12 +265,16 @@ async function create(req, res) {
     const folderName = `contratos_${year}`;
     const folder = await FolderService.ensureFolder(folderName);
 
+    // 4.1. organizationId para a pasta é opcional, mas se o template tiver CNPJ, tenta localizar a organização.
+    const organizationId = getOrganizationId(data);
+
     // 5. Cria documento.
     const result = await autentique.document.create({
       document: {
         name: generated.documentName,
       },
       signers: autentiqueSigners,
+      organizationId,
       filename,
       file: generated.buffer,
     });
