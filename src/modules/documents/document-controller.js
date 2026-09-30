@@ -177,23 +177,59 @@ function normalizeCnpj(value) {
   return String(value || "").replace(/\D/g, "");
 }
 
-// Retorna o organizationId da Autentique com base no CNPJ do template
+// Retorna o ID da organização Autentique com base no CNPJ da mantenedora
+function getOrganizationId(data) {
+  const cnpj = normalizeCnpj(data.mantenedora?.cnpj);
+
+  const cnpjOrg1 = normalizeCnpj(process.env.AUTENTIQUE_ORG1_CNPJ);
+  const cnpjOrg2 = normalizeCnpj(process.env.AUTENTIQUE_ORG2_CNPJ);
+
+  if (cnpj && cnpj === cnpjOrg1) {
+    const organizationId = Number(process.env.AUTENTIQUE_ORG1_ID);
+
+    if (!Number.isInteger(organizationId) || organizationId <= 0) {
+      throw new Error("AUTENTIQUE_ORG1_ID inválido ou não configurado.");
+    }
+
+    return organizationId;
+  }
+
+  if (cnpj && cnpj === cnpjOrg2) {
+    const organizationId = Number(process.env.AUTENTIQUE_ORG2_ID);
+
+    if (!Number.isInteger(organizationId) || organizationId <= 0) {
+      throw new Error("AUTENTIQUE_ORG2_ID inválido ou não configurado.");
+    }
+
+    return organizationId;
+  }
+
+  throw new Error(
+    `Organização Autentique não configurada para o CNPJ ${
+      cnpj || "não informado"
+    }.`,
+  );
+}
+
+// Retorna a chave da organização Autentique com base no CNPJ da mantenedora
 function getOrganizationKey(data) {
   const cnpj = normalizeCnpj(data.mantenedora?.cnpj);
 
   const cnpjOrg1 = normalizeCnpj(process.env.AUTENTIQUE_ORG1_CNPJ);
   const cnpjOrg2 = normalizeCnpj(process.env.AUTENTIQUE_ORG2_CNPJ);
 
-  if (cnpj === cnpjOrg1) {
-    return "qua";
+  if (cnpj && cnpj === cnpjOrg1) {
+    return "quarup";
   }
 
-  if (cnpj === cnpjOrg2) {
+  if (cnpj && cnpj === cnpjOrg2) {
     return "ies";
   }
 
   throw new Error(
-    `Organização não identificada para o CNPJ ${cnpj || "não informado"}.`,
+    `Organização Autentique não configurada para o CNPJ ${
+      cnpj || "não informado"
+    }.`,
   );
 }
 
@@ -261,15 +297,15 @@ async function create(req, res) {
       throw new Error("Ano do contrato não informado.");
     }
 
-    // 4. Pasta.
+    // 4. Organização
     const organizationKey = getOrganizationKey(data);
+    const organizationId = getOrganizationId(data);
+
+    // 4.1. Pasta
     const folderName = `contratos_${organizationKey}_${year}`;
     const folder = await FolderService.ensureFolder(folderName);
 
-    // 4.1. organizationId para a pasta é opcional, mas se o template tiver CNPJ, tenta localizar a organização.
-    const organizationId = getOrganizationId(data);
-
-    // 5. Cria documento.
+    // 5. Cria documento
     const result = await autentique.document.create({
       document: {
         name: generated.documentName,
