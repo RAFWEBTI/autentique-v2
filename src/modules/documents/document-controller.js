@@ -178,7 +178,7 @@ function normalizeCnpj(value) {
 }
 
 // Retorna o organizationId da Autentique com base no CNPJ do template
-function getOrganizationId(data) {
+function getOrganizationKey(data) {
   const cnpj = normalizeCnpj(data.mantenedora?.cnpj);
 
   const cnpjOrg1 = normalizeCnpj(process.env.AUTENTIQUE_ORG1_CNPJ);
