@@ -219,7 +219,7 @@ function getOrganizationKey(data) {
   const cnpjOrg2 = normalizeCnpj(process.env.AUTENTIQUE_ORG2_CNPJ);
 
   if (cnpj && cnpj === cnpjOrg1) {
-    return "quarup";
+    return "qua";
   }
 
   if (cnpj && cnpj === cnpjOrg2) {
