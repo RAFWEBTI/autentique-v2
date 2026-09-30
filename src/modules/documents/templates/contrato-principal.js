@@ -30,7 +30,8 @@ function fill(form, data) {
   // Contrato
   form.getTextField("C_ano").setText(data.contrato?.ano || "");
   form.getTextField("C_ano2").setText(data.contrato?.ano || "");
-
+  form.getTextField("C_ano_cla2").setText(data.contrato?.ano || "");
+  form.getTextField("C_ano_cla11").setText(data.contrato?.ano || "");
   form.getTextField("C_deferido").setText(data.contrato?.deferido || "");
 
   // Financeiro
@@ -67,17 +68,6 @@ function fill(form, data) {
   form
     .getTextField("C_endereco_completo")
     .setText(data.contratante?.enderecoCompleto || "");
-
-  // Contratante 2
-  form.getTextField("C2_nome").setText(data.contratante2?.nome || "");
-
-  form.getTextField("C2_rg").setText(data.contratante2?.rg || "");
-
-  form.getTextField("C2_cpf").setText(data.contratante2?.cpf || "");
-
-  form
-    .getTextField("C2_endereco_completo")
-    .setText(data.contratante2?.enderecoCompleto || "");
 }
 
 function getDocumentName(data) {
