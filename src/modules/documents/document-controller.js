@@ -172,28 +172,28 @@ async function sandbox(req, res) {
   }
 }
 
-// Normaliza o CNPJ, removendo caracteres não numéricos
+// Normaliza um CNPJ, removendo caracteres não numéricos
 function normalizeCnpj(value) {
   return String(value || "").replace(/\D/g, "");
 }
 
-// Retorna o ID da organização Autentique com base no CNPJ da mantenedora
+// Retorna o organizationId da Autentique com base no CNPJ do template
 function getOrganizationId(data) {
   const cnpj = normalizeCnpj(data.mantenedora?.cnpj);
 
   const cnpjOrg1 = normalizeCnpj(process.env.AUTENTIQUE_ORG1_CNPJ);
   const cnpjOrg2 = normalizeCnpj(process.env.AUTENTIQUE_ORG2_CNPJ);
 
-  if (cnpj && cnpj === cnpjOrg1) {
-    return Number(process.env.AUTENTIQUE_ORG1_ID);
+  if (cnpj === cnpjOrg1) {
+    return "qua";
   }
 
-  if (cnpj && cnpj === cnpjOrg2) {
-    return Number(process.env.AUTENTIQUE_ORG2_ID);
+  if (cnpj === cnpjOrg2) {
+    return "ies";
   }
 
   throw new Error(
-    `Organização Autentique não configurada para o CNPJ ${cnpj || "não informado"}.`,
+    `Organização não identificada para o CNPJ ${cnpj || "não informado"}.`,
   );
 }
 
@@ -262,7 +262,8 @@ async function create(req, res) {
     }
 
     // 4. Pasta.
-    const folderName = `contratos_${year}`;
+    const organizationKey = getOrganizationKey(data);
+    const folderName = `contratos_${organizationKey}_${year}`;
     const folder = await FolderService.ensureFolder(folderName);
 
     // 4.1. organizationId para a pasta é opcional, mas se o template tiver CNPJ, tenta localizar a organização.
