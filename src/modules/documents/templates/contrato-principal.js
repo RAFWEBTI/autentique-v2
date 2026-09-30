@@ -31,26 +31,22 @@ function fill(form, data) {
   form.getTextField("C_ano").setText(data.contrato?.ano || "");
   form.getTextField("C_ano2").setText(data.contrato?.ano || "");
   form.getTextField("C_ano_cla2").setText(data.contrato?.ano || "");
+  form.getTextField("C_ano_cla7").setText(data.contrato?.ano || "");
   form.getTextField("C_ano_cla11").setText(data.contrato?.ano || "");
   form.getTextField("C_deferido").setText(data.contrato?.deferido || "");
 
   // Financeiro
   form.getTextField("C_total").setText(data.financeiro?.total || "");
-
   form
     .getTextField("C_total_extenso")
     .setText(data.financeiro?.totalExtenso || "");
-
   form.getTextField("C_parcelas").setText(data.financeiro?.parcelas || "");
-
   form
     .getTextField("C_parcelas_valor")
     .setText(data.financeiro?.parcelas_valor || "");
-
   form
     .getTextField("C_parcelas_valor_extenso")
     .setText(data.financeiro?.parcelas_valor_extenso || "");
-
   form
     .getTextField("C_parcelas_vence")
     .setText(data.financeiro?.parcelas_vence || "");
@@ -60,11 +56,8 @@ function fill(form, data) {
 
   // Contratante
   form.getTextField("C_nome").setText(data.contratante?.nome || "");
-
   form.getTextField("C_rg").setText(data.contratante?.rg || "");
-
   form.getTextField("C_cpf").setText(data.contratante?.cpf || "");
-
   form
     .getTextField("C_endereco_completo")
     .setText(data.contratante?.enderecoCompleto || "");
@@ -96,8 +89,8 @@ const signaturePositions = {
   contractor1: [
     {
       element: "SIGNATURE",
-      x: "66.7506",
-      y: "29.9465",
+      x: "65.86901763224186",
+      y: "66.57754010695189",
       z: 4,
     },
   ],
@@ -105,7 +98,7 @@ const signaturePositions = {
   contractor2: [
     {
       element: "SIGNATURE",
-      x: "66.7506",
+      x: "65.86901763224186",
       y: "41.1764",
       z: 4,
     },
@@ -114,8 +107,8 @@ const signaturePositions = {
   director: [
     {
       element: "SIGNATURE",
-      x: "66.7506",
-      y: "51.7825",
+      x: "65.86901763224186",
+      y: "77.71836007130125",
       z: 4,
     },
   ],
