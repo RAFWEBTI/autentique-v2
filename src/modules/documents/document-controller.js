@@ -276,10 +276,14 @@ async function create(req, res) {
     }
 
     // 6. Assinatura automática somente se o template definir.
+    let directorAutoSigned = false;
+
     if (generated.signers?.director?.autoSign) {
       await autentique.document.signById({
         documentId: document.id,
       });
+
+      directorAutoSigned = true;
     }
 
     // 7. Move para pasta.
@@ -360,6 +364,10 @@ async function create(req, res) {
       },
 
       signers: normalizedSigners,
+
+      automaticSignatures: {
+        director: directorAutoSigned,
+      },
 
       createdAt: document.created_at,
     });
