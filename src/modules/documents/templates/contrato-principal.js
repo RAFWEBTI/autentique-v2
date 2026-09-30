@@ -122,8 +122,8 @@ const signaturePositions = {
 };
 
 module.exports = {
-  file: "contrato_principal_2026_v1.pdf",
-  version: "contrato_principal_2026_v1",
+  file: "contrato_principal_2027_v1.pdf",
+  version: "contrato_principal_2027_v1",
   signers,
   signaturePositions,
   getDocumentName,
