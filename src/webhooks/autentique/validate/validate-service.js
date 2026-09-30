@@ -2,18 +2,8 @@
 
 const crypto = require("crypto");
 
-function validateAutentiqueWebhook(rawBody, signature) {
-  const secret = process.env.AUTENTIQUE_WEBHOOK_SECRET;
-
+function isValidWithSecret(rawBody, signature, secret) {
   if (!secret) {
-    throw new Error("AUTENTIQUE_WEBHOOK_SECRET não configurado.");
-  }
-
-  if (!rawBody || !Buffer.isBuffer(rawBody)) {
-    return false;
-  }
-
-  if (!signature) {
     return false;
   }
 
@@ -25,7 +15,6 @@ function validateAutentiqueWebhook(rawBody, signature) {
     .digest("hex");
 
   const receivedBuffer = Buffer.from(receivedSignature, "hex");
-
   const expectedBuffer = Buffer.from(expectedSignature, "hex");
 
   if (
@@ -36,6 +25,29 @@ function validateAutentiqueWebhook(rawBody, signature) {
   }
 
   return crypto.timingSafeEqual(receivedBuffer, expectedBuffer);
+}
+
+function validateAutentiqueWebhook(rawBody, signature) {
+  const secrets = [
+    process.env.AUTENTIQUE_WEBHOOK_SECRET_ORG1,
+    process.env.AUTENTIQUE_WEBHOOK_SECRET_ORG2,
+  ].filter(Boolean);
+
+  if (!secrets.length) {
+    throw new Error("Nenhum AUTENTIQUE_WEBHOOK_SECRET configurado.");
+  }
+
+  if (!rawBody || !Buffer.isBuffer(rawBody)) {
+    return false;
+  }
+
+  if (!signature) {
+    return false;
+  }
+
+  return secrets.some((secret) =>
+    isValidWithSecret(rawBody, signature, secret),
+  );
 }
 
 module.exports = {
