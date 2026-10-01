@@ -66,7 +66,7 @@ const signaturePositions = {
       element: "SIGNATURE",
       x: "65.743073047859",
       y: "71.12299465240642",
-      z: 4,
+      z: 1,
     },
   ],
 
@@ -75,7 +75,7 @@ const signaturePositions = {
       element: "SIGNATURE",
       x: "65.743073047859",
       y: "61.12299465240642",
-      z: 4,
+      z: 1,
     },
   ],
 
@@ -84,7 +84,7 @@ const signaturePositions = {
       element: "SIGNATURE",
       x: "65.743073047859",
       y: "82.62032085561496",
-      z: 4,
+      z: 1,
     },
   ],
 };
