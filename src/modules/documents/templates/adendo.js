@@ -3,7 +3,9 @@
 function fill(form, data) {
   // Mantenedora
   form.getTextField("C_manten").setText(data.mantenedora?.nome || "");
+  form.getTextField("C_manten2").setText(data.mantenedora?.nome || "");
   form.getTextField("C_manten_cnpj").setText(data.mantenedora?.cnpj || "");
+  form.getTextField("C_manten_cnpj2").setText(data.mantenedora?.cnpj || "");
   form
     .getTextField("C_manten_endereco")
     .setText(data.mantenedora?.endereco || "");
