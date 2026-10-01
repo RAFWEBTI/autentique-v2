@@ -15,6 +15,7 @@ function fill(form, data) {
 
   // Contrato
   form.getTextField("C_ano").setText(data.contrato?.ano || "");
+  form.getTextField("C_ano2").setText(data.contrato?.ano || "");
   form.getTextField("deferido").setText(data.contrato?.deferido || "");
 
   // Financeiro
