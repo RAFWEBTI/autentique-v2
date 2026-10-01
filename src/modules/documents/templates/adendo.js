@@ -4,6 +4,9 @@ function fill(form, data) {
   // Mantenedora
   form.getTextField("C_manten").setText(data.mantenedora?.nome || "");
   form.getTextField("C_manten_cnpj").setText(data.mantenedora?.cnpj || "");
+  form
+    .getTextField("C_manten_endereco")
+    .setText(data.mantenedora?.endereco || "");
 
   // Turma
   form.getTextField("T_ensino").setText(data.turma?.ensino || "");
@@ -12,7 +15,6 @@ function fill(form, data) {
 
   // Contrato
   form.getTextField("C_ano").setText(data.contrato?.ano || "");
-  form.getTextField("C_ano2").setText(data.contrato?.ano || "");
   form.getTextField("deferido").setText(data.contrato?.deferido || "");
 
   // Financeiro
@@ -31,23 +33,21 @@ function fill(form, data) {
   form
     .getTextField("C_endereco_completo")
     .setText(data.contratante?.enderecoCompleto || "");
-
-  // Contratante 2
-  form.getTextField("C2_nome").setText(data.contratante2?.nome || "");
-  form.getTextField("C2_rg").setText(data.contratante2?.rg || "");
-  form.getTextField("C2_cpf").setText(data.contratante2?.cpf || "");
-  form
-    .getTextField("C2_endereco_completo")
-    .setText(data.contratante2?.enderecoCompleto || "");
 }
 
 function getDocumentName(data) {
-  return `Adendo Contratual ${data.contrato?.ano || ""} - ${
-    data.aluno?.nome || "Aluno"
-  }`;
+  const ano = data.contrato?.ano || "";
+  const aluno = data.aluno?.nome || "Aluno";
+
+  return `Contrato Escolar ${ano} - ${aluno}`.trim();
 }
 
 const signers = {
+  director: {
+    required: true,
+    autoSign: true,
+  },
+
   contractor1: {
     required: true,
   },
@@ -61,25 +61,34 @@ const signaturePositions = {
   contractor1: [
     {
       element: "SIGNATURE",
-      x: "66.52468513853909",
-      y: "69.3404634581105",
-      z: 1,
+      x: "65.743073047859",
+      y: "71.12299465240642",
+      z: 4,
     },
   ],
 
   contractor2: [
     {
       element: "SIGNATURE",
-      x: "66.52468513853909",
-      y: "80.5704099821747",
-      z: 1,
+      x: "65.743073047859",
+      y: "61.12299465240642",
+      z: 4,
+    },
+  ],
+
+  director: [
+    {
+      element: "SIGNATURE",
+      x: "65.743073047859",
+      y: "82.62032085561496",
+      z: 4,
     },
   ],
 };
 
 module.exports = {
-  file: "adendo_2026_v1.pdf",
-  version: "adendo_2026_v1",
+  file: "adendo_2027_v1.pdf",
+  version: "adendo_2027_v1",
   signers,
   signaturePositions,
   getDocumentName,
