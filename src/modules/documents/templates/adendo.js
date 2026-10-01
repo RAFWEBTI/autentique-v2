@@ -42,7 +42,7 @@ function getDocumentName(data) {
   const ano = data.contrato?.ano || "";
   const aluno = data.aluno?.nome || "Aluno";
 
-  return `Contrato Escolar ${ano} - ${aluno}`.trim();
+  return `Adendo ${ano} - ${aluno}`.trim();
 }
 
 const signers = {
